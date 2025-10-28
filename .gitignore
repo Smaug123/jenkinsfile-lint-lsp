@@ -1,0 +1,24 @@
+# Rust build artifacts
+/target/
+Cargo.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Nix
+result
+result-*
+
+# direnv
+.direnv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local configuration (may contain secrets)
+config.toml
