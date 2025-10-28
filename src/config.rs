@@ -30,10 +30,10 @@ impl Config {
         }
 
         // Try specified config file
-        if let Some(path) = config_path {
-            if path.exists() {
-                return Self::from_file(&path);
-            }
+        if let Some(path) = config_path
+            && path.exists()
+        {
+            return Self::from_file(&path);
         }
 
         // Try default config file location
@@ -70,14 +70,12 @@ impl Config {
 
         // Only return config if all required fields are present
         match (jenkins_url, username, api_token) {
-            (Some(jenkins_url), Some(username), Some(api_token)) => {
-                Ok(Some(Self {
-                    jenkins_url,
-                    username,
-                    api_token,
-                    insecure,
-                }))
-            }
+            (Some(jenkins_url), Some(username), Some(api_token)) => Ok(Some(Self {
+                jenkins_url,
+                username,
+                api_token,
+                insecure,
+            })),
             _ => Ok(None),
         }
     }
@@ -105,9 +103,7 @@ impl Config {
         }
 
         // Validate URL format
-        if !self.jenkins_url.starts_with("http://")
-            && !self.jenkins_url.starts_with("https://")
-        {
+        if !self.jenkins_url.starts_with("http://") && !self.jenkins_url.starts_with("https://") {
             return Err(LspError::Config(
                 "jenkins_url must start with http:// or https://".to_string(),
             ));

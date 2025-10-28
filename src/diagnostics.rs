@@ -25,7 +25,10 @@ pub fn parse_jenkins_response(response: &str) -> Vec<Diagnostic> {
     for line in response.lines() {
         if let Some(captures) = re.captures(line) {
             // Extract message, line number, and column number
-            let message = captures.get(1).map(|m| m.as_str()).unwrap_or("Unknown error");
+            let message = captures
+                .get(1)
+                .map(|m| m.as_str())
+                .unwrap_or("Unknown error");
             let line_str = captures.get(2).map(|m| m.as_str()).unwrap_or("0");
             let col_str = captures.get(3).map(|m| m.as_str()).unwrap_or("0");
 
@@ -120,8 +123,7 @@ WorkflowScript: 20: Missing closing brace @ line 20, column 3.
 
     #[test]
     fn test_parse_complex_message() {
-        let response =
-            "WorkflowScript: 15: expecting '}', found 'stage' @ line 15, column 10.";
+        let response = "WorkflowScript: 15: expecting '}', found 'stage' @ line 15, column 10.";
         let diagnostics = parse_jenkins_response(response);
 
         assert_eq!(diagnostics.len(), 1);

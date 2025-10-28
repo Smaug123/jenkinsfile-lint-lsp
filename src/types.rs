@@ -35,9 +35,9 @@ pub enum LspError {
     #[error("Authentication failed: {0}")]
     Auth(String),
 
-    #[error("Parse error: {0}")]
-    Parse(String),
-
+    // we never emit this one
+    // #[error("Parse error: {0}")]
+    // Parse(String),
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
 

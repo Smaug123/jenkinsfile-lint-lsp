@@ -1,6 +1,6 @@
 use crate::config::Config;
 use crate::types::{Crumb, LspError, Result, ValidationResult};
-use reqwest::{multipart, Client};
+use reqwest::{Client, multipart};
 use std::time::Duration;
 
 /// Jenkins API client for validating Jenkinsfiles

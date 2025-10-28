@@ -45,9 +45,7 @@ impl Backend {
             Ok(ValidationResult::Success) => {
                 tracing::info!("Validation successful: {}", uri);
                 // Clear diagnostics
-                self.client
-                    .publish_diagnostics(uri, Vec::new(), None)
-                    .await;
+                self.client.publish_diagnostics(uri, Vec::new(), None).await;
             }
             Ok(ValidationResult::Error(response)) => {
                 tracing::info!("Validation returned errors: {}", uri);
@@ -60,7 +58,10 @@ impl Backend {
             Err(LspError::Auth(msg)) => {
                 tracing::error!("Authentication error: {}", msg);
                 self.client
-                    .show_message(MessageType::ERROR, format!("Jenkins authentication failed: {}", msg))
+                    .show_message(
+                        MessageType::ERROR,
+                        format!("Jenkins authentication failed: {}", msg),
+                    )
                     .await;
             }
             Err(e) => {
@@ -145,8 +146,6 @@ impl LanguageServer for Backend {
         self.document_map.remove(&uri);
 
         // Clear diagnostics
-        self.client
-            .publish_diagnostics(uri, Vec::new(), None)
-            .await;
+        self.client.publish_diagnostics(uri, Vec::new(), None).await;
     }
 }
