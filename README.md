@@ -2,6 +2,12 @@
 
 A Language Server Protocol (LSP) implementation for validating Jenkinsfiles using a remote Jenkins instance.
 
+This is 100% vibe-coded with Sonnet 4.5.
+I have not even read the code, as I write this.
+It works.
+The rest of this README is also vibed; Sonnet makes these claims, but I have no idea whether they're correct.
+I draw your attention to the MIT licence: "WITHOUT WARRANTY OF ANY KIND... INCLUDING... FITNESS FOR A PARTICULAR PURPOSE".
+
 ## Features
 
 - **Real-time validation**: Validates Jenkinsfiles by sending them to your Jenkins instance
@@ -256,7 +262,7 @@ direnv allow
 
 ## License
 
-MIT
+[MIT](./LICENSE).
 
 ## Contributing
 
