@@ -47,6 +47,8 @@ cargo clippy
 cargo clippy --all-targets --all-features -- -D warnings
 ```
 
+If you're about to `git commit`, always `cargo fmt` and `cargo clippy` and `cargo test` first.
+
 ### Running the LSP Server
 ```bash
 # Set required environment variables
