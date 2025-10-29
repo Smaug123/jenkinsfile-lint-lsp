@@ -104,13 +104,15 @@ impl JenkinsClient {
         // Try to get crumb, but continue if it fails (some Jenkins instances don't require it)
         let crumb = match self.get_crumb().await {
             Ok(crumb) => crumb,
-            Err(LspError::JenkinsApi(_)) => {
-                // If crumb endpoint doesn't exist, try with empty crumb
+            // Only catch the specific 404 error (endpoint not found)
+            Err(LspError::JenkinsApi(ref msg)) if msg.contains("endpoint not found") => {
+                // If crumb endpoint doesn't exist (404), CSRF is disabled - use empty crumb
                 Crumb {
                     crumb: String::new(),
                     crumb_request_field: "Jenkins-Crumb".to_string(),
                 }
             }
+            // Propagate all other errors (Auth, Network, other API errors like 500)
             Err(e) => return Err(e),
         };
 
