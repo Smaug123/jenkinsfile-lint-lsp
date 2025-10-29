@@ -5,8 +5,9 @@ const SUCCESS_MESSAGE: &str = "Jenkinsfile successfully validated.";
 
 /// Parse Jenkins validation response and convert to LSP diagnostics
 ///
-/// Jenkins returns errors in the format:
-/// "WorkflowScript: 46: unexpected token: } @ line 46, column 1."
+/// Jenkins returns errors in various formats:
+/// - "WorkflowScript: 46: unexpected token: } @ line 46, column 1."
+/// - "WorkflowScript: 46: unexpected token: } @ line: 46, column: 1"
 ///
 /// Multiple errors may be present across multiple lines of output.
 pub fn parse_jenkins_response(response: &str) -> Vec<Diagnostic> {
@@ -16,9 +17,11 @@ pub fn parse_jenkins_response(response: &str) -> Vec<Diagnostic> {
     }
 
     // Regex pattern to match Jenkins error format
-    // WorkflowScript: <num>: <message> @ line <line>, column <col>.
-    let re = Regex::new(r"WorkflowScript:\s+\d+:\s+(.+?)\s+@\s+line\s+(\d+),\s+column\s+(\d+)\.")
-        .expect("Invalid regex pattern");
+    // WorkflowScript: <num>: <message> @ line[:]? <line>, column[:]? <col>[.]?
+    // Handles variations with/without colons after line/column and optional trailing period
+    let re =
+        Regex::new(r"WorkflowScript:\s+\d+:\s+(.+?)\s+@\s*line[:\s]+(\d+),\s*column[:\s]+(\d+)\.?")
+            .expect("Invalid regex pattern");
 
     let mut diagnostics = Vec::new();
 
@@ -130,5 +133,29 @@ WorkflowScript: 20: Missing closing brace @ line 20, column 3.
         assert_eq!(diagnostics[0].message, "expecting '}', found 'stage'");
         assert_eq!(diagnostics[0].range.start.line, 14);
         assert_eq!(diagnostics[0].range.start.character, 9);
+    }
+
+    #[test]
+    fn test_parse_colon_variant_with_period() {
+        // Jenkins can emit with colons after line/column
+        let response = "WorkflowScript: 46: unexpected token: } @ line: 46, column: 1.";
+        let diagnostics = parse_jenkins_response(response);
+
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].message, "unexpected token: }");
+        assert_eq!(diagnostics[0].range.start.line, 45);
+        assert_eq!(diagnostics[0].range.start.character, 0);
+    }
+
+    #[test]
+    fn test_parse_colon_variant_no_period() {
+        // Jenkins can emit without trailing period
+        let response = "WorkflowScript: 46: unexpected token: } @ line: 46, column: 1";
+        let diagnostics = parse_jenkins_response(response);
+
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].message, "unexpected token: }");
+        assert_eq!(diagnostics[0].range.start.line, 45);
+        assert_eq!(diagnostics[0].range.start.character, 0);
     }
 }
